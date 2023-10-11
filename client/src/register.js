@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { register } from './api';
 
 
 const Register = () => {
@@ -14,11 +15,17 @@ const Register = () => {
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form data submitted:', formData);
-    // Here you can handle the form submission, 
-    // like sending the data to an API, etc.
+    try {
+      await register(formData);;
+      console.log('Registered successfully');
+    } catch (error) {
+      console.error('Registration failed', error);
+      // handle error - show error message to user
+    }
+    
   };
 
   return (

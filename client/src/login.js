@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { login } from './api'
 
 
 const Login = () => {
@@ -10,11 +11,19 @@ const Login = () => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     console.log("Email:", credentials.email);
     console.log("Password:", credentials.password);
-    // Add the code to submit the form, for example, make an API call here.
+
+    try {
+      await login(credentials);
+      console.log('Logged in successfully');
+    } catch (error) {
+      console.error('Login failed', error);
+      // handle error - show error message to user
+    }
   };
 
   return (
