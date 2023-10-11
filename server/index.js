@@ -22,6 +22,15 @@ app.use(
 app.post('/register', async (req, res) => {
   try {
       const { username, email, password } = req.body;
+
+      // Check if the email is already in use
+      const emailInUse = db.users.some((user) => user.email === email);
+
+      if (emailInUse) {
+          // If email is in use, return an error response
+          return res.status(400).send('Email already in use');
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = { username, email, password: hashedPassword };
       db.users.push(user);
