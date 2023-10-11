@@ -13,7 +13,7 @@ export const register = async (userData) => {
     if (!response.ok) {
       throw new Error('Registration failed');
     }
-    return response.json();
+    return response.headers.get("content-length") ? await response.json() : {};
   } catch (error) {
     console.error(error);
     throw error;
@@ -34,7 +34,7 @@ export const login = async (userData) => {
         throw new Error('Login failed');
       }
   
-      return response.json(); // adjust this according to your backend response
+      return response.headers.get("content-length") ? await response.json() : {};
     } catch (error) {
       console.error(error);
       throw error;

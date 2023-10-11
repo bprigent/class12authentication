@@ -1,5 +1,6 @@
 // server/index.js
 const express = require('express');
+const cors = require('cors');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const db = require('./db');
@@ -8,6 +9,7 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // express-session middleware
 app.use(
@@ -35,7 +37,7 @@ app.post('/register', async (req, res) => {
       const user = { username, email, password: hashedPassword };
       db.users.push(user);
       req.session.userId = user.email;
-      res.status(201).send();
+      res.status(201).json({ message: 'Registration successful' });
   } catch (error) {
       res.status(500).send();
   }
