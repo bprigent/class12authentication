@@ -29,7 +29,7 @@ app.post('/register', async (req, res) => {
     // Check if the email is already in use, if so, return error
     const emailInUse = db.users.some((user) => user.email === email);
     if (emailInUse) {
-      return res.status(400).send('Email already in use');
+      return res.status(400).json({ message: 'This email is already in use' });
     }
 
     // Generate a hashed password using bcrypt
@@ -49,7 +49,7 @@ app.post('/register', async (req, res) => {
 
   } catch (error) {
     // if there is an error, send an error
-    res.status(500).send();
+    res.status(500).json({ message: 'Oops, Unknown error, please try again' });
   }
 });
 
