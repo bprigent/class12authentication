@@ -5,14 +5,19 @@ import { UserContext } from './UserContext';
 
 
 const Home = () => {
-
+  // extract user data from context
   const { user } = useContext(UserContext);
 
   const handleLogout = async () => {
     try {
-      await logout(); // Call the logout function from api.js
+      // Call the logout function from api
+      await logout();
+      // reload page once lodout is done
+      window.location.reload();
+      // testing
       console.log('Logged out successfully');
     } catch (error) {
+      //log error
       console.error('Logout failed', error);
     }
   };
@@ -20,7 +25,7 @@ const Home = () => {
   return (
     <div>
       <h2>Homepage</h2>
-      {user ? <p>{user.email}</p> : <p>No User Account Loged In</p>}
+      {user ? <p>Email: {user.email}, Username: {user.username}</p> : <p>No User Account Loged In</p>}
       <br />
       <Link to="/login">Login</Link>
       <br /><br />

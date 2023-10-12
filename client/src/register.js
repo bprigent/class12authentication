@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { register } from './api';
 
 
 const Register = () => {
+  
+  // save form data in state
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
 
+  // set navigate for redirect
+  const navigate = useNavigate();
+  
+  // handle change in the form data
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
@@ -19,8 +25,12 @@ const Register = () => {
     e.preventDefault();
     console.log('Form data submitted:', formData);
     try {
+      // register user to database
       await register(formData);;
+      //testing
       console.log('Registered successfully');
+      //redirect to homepage
+      navigate('/');
     } catch (error) {
       console.error('Registration failed', error);
       // handle error - show error message to user
