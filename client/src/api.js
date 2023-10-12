@@ -1,5 +1,8 @@
 const apiUrl = 'http://localhost:3000';
 
+
+
+
 export const register = async (userData) => {
   try {
     const response = await fetch(`${apiUrl}/register`, {
@@ -13,12 +16,15 @@ export const register = async (userData) => {
     if (!response.ok) {
       throw new Error('Registration failed');
     }
-    return response.headers.get("content-length") ? await response.json() : {};
+    return await response.json();
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
+
+
+
 
 export const login = async (userData) => {
   try {
@@ -34,12 +40,14 @@ export const login = async (userData) => {
       throw new Error('Login failed');
     }
 
-    return response.headers.get("content-length") ? await response.json() : {};
+    return await response.json();
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
+
+
 
 
 

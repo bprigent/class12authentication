@@ -13,54 +13,71 @@ app.use(cors());
 
 // express-session middleware
 app.use(
-    session({
-        secret: 'secret',
-        resave: false,
-        saveUninitialized: false,
-    })
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+  })
 );
 
 // Register endpoint
 app.post('/register', async (req, res) => {
   try {
-      const { username, email, password } = req.body;
+    // extract data from request body
+    const { username, email, password } = req.body;
 
-      // Check if the email is already in use
-      const emailInUse = db.users.some((user) => user.email === email);
+    // Check if the email is already in use, if so, return error
+    const emailInUse = db.users.some((user) => user.email === email);
+    if (emailInUse) {
+      return res.status(400).send('Email already in use');
+    }
 
-      if (emailInUse) {
-          // If email is in use, return an error response
-          return res.status(400).send('Email already in use');
-      }
+    // Generate a hashed password using bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = { username, email, password: hashedPassword };
-      db.users.push(user);
-      req.session.userId = user.email;
-      res.status(201).json({ message: 'Registration successful' });
+    // create a user object with hased password to be sent to database
+    const newUserObject = { username: username, email: email, password: hashedPassword };
+
+    // add newUserObject to database
+    db.users.push(newUserObject);
+
+    // set the session user id to be the email
+    req.session.userId = newUserObject.email;
+
+    // Set the status of the response
+    res.status(201).json({ message: 'Registration successful' });
+
   } catch (error) {
-      res.status(500).send();
+    // if there is an error, send an error
+    res.status(500).send();
   }
 });
 
 // Login endpoint
 app.post('/login', async (req, res) => {
+  // extract data from body
   const { email, password } = req.body;
-  const user = db.users.find((u) => u.email === email);
 
-  if (user && await bcrypt.compare(password, user.password)) {
-      req.session.userId = user.email;
-      res.json({ username: user.username, email: user.email });  // Send user data
+  // find user data in database
+  const userObject = db.users.find((u) => u.email === email);
+
+  // if there is a user, and the password is correct, then
+  if (userObject && await bcrypt.compare(password, userObject.password)) {
+    // set session user id to be the email, to maintain the user session across multiple requests
+    req.session.userId = userObject.email;
+    // send user data back to client
+    res.json({ username: userObject.username, email: userObject.email });
   } else {
-      res.status(401).send();
+    // If email or password incorrect, send 401 status and error message to client
+    res.status(401).json({ error: 'Unauthorized: Invalid email or password' });
   }
 });
 
 // Logout endpoint
 app.post('/logout', (req, res) => {
   req.session.destroy((err) => {
-      if (err) return res.status(500).send();
-      res.send();
+    if (err) return res.status(500).send();
+    res.send();
   });
 });
 
