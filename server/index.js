@@ -50,7 +50,7 @@ app.post('/login', async (req, res) => {
 
   if (user && await bcrypt.compare(password, user.password)) {
       req.session.userId = user.email;
-      res.send();
+      res.json({ username: user.username, email: user.email });  // Send user data
   } else {
       res.status(401).send();
   }
