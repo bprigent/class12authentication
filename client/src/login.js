@@ -9,6 +9,9 @@ const Login = () => {
   
   // set credentials
   const [credentials, setCredentials] = useState({ email: "", password: "" });
+
+  // set error message to be updated easily.
+  const [error, setError] = useState('');
   
   // set navigate for redirect
   const navigate = useNavigate();
@@ -41,6 +44,7 @@ const Login = () => {
     } catch (error) {
       console.error('Login failed', error);
       // handle error - show error message to user
+      setError(error.message);
     }
   };
 
@@ -69,6 +73,7 @@ const Login = () => {
           />
         </div>
         <button type="submit">Login</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
       <br /><br />
       <Link to="/">Back Home</Link>

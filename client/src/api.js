@@ -5,6 +5,7 @@ const apiUrl = 'http://localhost:3000';
 
 export const register = async (userData) => {
   try {
+    // create a response constant that contains the response of the fetch
     const response = await fetch(`${apiUrl}/register`, {
       method: 'POST',
       headers: {
@@ -13,8 +14,10 @@ export const register = async (userData) => {
       body: JSON.stringify(userData),
     });
 
+    // if the response is not ok
     if (!response.ok) {
-      throw new Error('Registration failed');
+      const errorObject = await response.json();
+      throw new Error(errorObject.error);
     }
     return await response.json();
   } catch (error) {
@@ -26,8 +29,11 @@ export const register = async (userData) => {
 
 
 
+
+
 export const login = async (userData) => {
   try {
+    // create a response constant that contains the response of the fetch
     const response = await fetch(`${apiUrl}/login`, {
       method: 'POST',
       headers: {
@@ -36,16 +42,23 @@ export const login = async (userData) => {
       body: JSON.stringify(userData),
     });
 
+    // if the response is not ok
     if (!response.ok) {
-      throw new Error('Login failed');
+      const errorObject = await response.json();
+      throw new Error(errorObject.error);
     }
-
+    
+    // return the response in a json
     return await response.json();
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error(error);
     throw error;
   }
 };
+
+
 
 
 

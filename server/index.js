@@ -20,6 +20,12 @@ app.use(
   })
 );
 
+
+
+
+
+
+
 // Register endpoint
 app.post('/register', async (req, res) => {
   try {
@@ -45,33 +51,61 @@ app.post('/register', async (req, res) => {
     req.session.userId = newUserObject.email;
 
     // Set the status of the response
-    res.status(201).json({ message: 'Registration successful' });
+    res.status(201).json({ message: 'Registration successful, Account created' });
 
-  } catch (error) {
-    // if there is an error, send an error
+  } 
+
+  // catch unknown errors
+  catch (error) {
     res.status(500).json({ message: 'Oops, Unknown error, please try again' });
   }
 });
 
+
+
+
+
+
+
+
 // Login endpoint
 app.post('/login', async (req, res) => {
-  // extract data from body
-  const { email, password } = req.body;
+  try {
+    // extract data from body
+    const { email, password } = req.body;
+    
+    // Handle if email and password are not provided
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
 
-  // find user data in database
-  const userObject = db.users.find((u) => u.email === email);
+    // check if email exist
+    const userObject = db.users.find((u) => u.email === email);
 
-  // if there is a user, and the password is correct, then
-  if (userObject && await bcrypt.compare(password, userObject.password)) {
-    // set session user id to be the email, to maintain the user session across multiple requests
-    req.session.userId = userObject.email;
-    // send user data back to client
-    res.json({ username: userObject.username, email: userObject.email });
-  } else {
-    // If email or password incorrect, send 401 status and error message to client
-    res.status(401).json({ error: 'Unauthorized: Invalid email or password' });
+    // check if password and email are correct
+    if (userObject && await bcrypt.compare(password, userObject.password)) {
+      // set session user id to be the email, to maintain the user session across multiple requests 
+      req.session.userId = userObject.email;
+      // send user data back to client
+      res.status(200).json({ username: userObject.username, email: userObject.email });
+    } else {
+      // If email or password incorrect, send 401 status and error message to client
+      res.status(401).json({ error: 'Invalid email or password' });
+    }
+  } 
+
+  // catch unknown errors
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
+
+
+
+
+
+
 
 // Logout endpoint
 app.post('/logout', (req, res) => {
@@ -81,9 +115,11 @@ app.post('/logout', (req, res) => {
   });
 });
 
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server nodemon changes!" });
-});
+
+
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
